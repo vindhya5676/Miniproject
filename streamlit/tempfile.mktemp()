@@ -1,0 +1,30 @@
+import tempfile
+import os
+import matplotlib.pyplot as plt
+from fpdf import FPDF
+
+# Example function to generate PDF with a temporary graph image
+def generate_pdf_example():
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "Sample PDF", ln=True, align="C")
+
+    # Create a sample plot
+    fig, ax = plt.subplots()
+    ax.plot([1,2,3], [10,20,15])
+    
+    # Windows-safe temporary file path
+    tmp_img_path = tempfile.mktemp(suffix=".png")
+    fig.savefig(tmp_img_path)   # Save the figure to this path
+    plt.close(fig)
+
+    # Add image to PDF
+    pdf.image(tmp_img_path, x=20, w=170)
+    
+    # Delete temporary image
+    os.remove(tmp_img_path)
+
+    # Return PDF bytes
+    pdf_bytes = pdf.output(dest="S").encode("latin1")
+    return pdf_bytes
